@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAI Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e8e8e8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            color: #ecf0f1;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #bdc3c7;
+        }
+
+        .content {
+            padding: 40px;
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        .upload-section {
+            background: rgba(44, 62, 80, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px dashed rgba(52, 152, 219, 0.5);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .upload-section:hover {
+            border-color: #3498db;
+            background: rgba(44, 62, 80, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
+        }
+
+        .upload-section h2 {
+            color: #ecf0f1;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(52, 73, 94, 0.8);
+            color: #ecf0f1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(52, 73, 94, 0.9);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .file-input::file-selector-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .file-input::file-selector-button:hover {
+            background: #2980b9;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            background: rgba(44, 62, 80, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .selected-files {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(52, 73, 94, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #ecf0f1;
+        }
+
+        .file-size {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        .remove-file {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .remove-file:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+        }
+
+        .analyze-btn:disabled {
+            background: #34495e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #7f8c8d;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(44, 62, 80, 0.5);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(52, 152, 219, 0.2);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .results-content {
+            background: rgba(52, 73, 94, 0.8);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            padding: 25px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-left: 4px solid #2ecc71;
+        }
+
+        .file-count {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .results-content h3 {
+            color: #ecf0f1;
+            margin: 20px 0 15px 0;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .upload-section {
+                padding: 20px;
+            }
+
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .remove-file {
+                align-self: flex-end;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(44, 62, 80, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Work Ability Index (WAI) Analysis Tool</h1>
+            <p>Comprehensive analysis for Excel files with enhanced grip strength correlation</p>
+        </div>
+
+        <div class="content">
+            <div class="upload-section">
+                <h2>Upload Excel Files (1-20 files)</h2>
+                <form id="uploadForm" method="post" action="/upload" enctype="multipart/form-data">
+                    <div class="file-input-container">
+                        <input type="file" id="fileInput" class="file-input" name="files[]" multiple accept=".xlsx,.xls">
+                    </div>
+                    <div class="file-info">
+                        <strong>Supported formats:</strong> .xlsx, .xls<br>
+                        <strong>Maximum files:</strong> 20<br>
+                        <strong>Maximum file size:</strong> 100MB per file<br>
+                        <strong>Requirements:</strong> Excel files with headers in row 3 and data from row 4
+                    </div>
+                    <div id="selectedFiles" class="selected-files" style="display: none;">
+                        <h3>Selected Files:</h3>
+                        <div id="fileList"></div>
+                    </div>
+                    <button id="analyzeBtn" class="analyze-btn" type="submit" disabled>
+                        Analyze Files
+                    </button>
+                </form>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Analyzing files... This may take a few minutes for large datasets.</p>
+            </div>
+
+            <div id="results" class="results-section">
+                <div class="results-header">
+                    <h2>Analysis Complete!</h2>
+                    <p>Your comprehensive WAI analysis report is ready for download.</p>
+                </div>
+                <div class="results-content">
+                    <div id="resultsSummary"></div>
+                    <button id="downloadBtn" class="download-btn">
+                        Download Analysis Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            // Validate number of files
+            if (files.length > 20) {
+                alert('Maximum 20 files allowed. Please select fewer files.');
+                e.target.value = '';
+                return;
+            }
+
+            // Validate file types
+            const allowedTypes = ['.xlsx', '.xls'];
+            const invalidFiles = files.filter(file => {
+                const extension = '.' + file.name.split('.').pop().toLowerCase();
+                return !allowedTypes.includes(extension);
+            });
+
+            if (invalidFiles.length > 0) {
+                alert('Invalid file type(s): ' + invalidFiles.map(f => f.name).join(', ') + '\nOnly Excel files (.xlsx, .xls) are allowed.');
+                e.target.value = '';
+                return;
+            }
+
+            selectedFiles = files;
+            displaySelectedFiles();
+            updateAnalyzeButton();
+        });
+
+        function displaySelectedFiles() {
+            const fileList = document.getElementById('fileList');
+            const selectedFilesDiv = document.getElementById('selectedFiles');
+            
+            if (selectedFiles.length === 0) {
+                selectedFilesDiv.style.display = 'none';
+                return;
+            }
+
+            selectedFilesDiv.style.display = 'block';
+            fileList.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                
+                fileItem.innerHTML = `
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${fileSize} MB</div>
+                    </div>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+
+            // Update file count
+            const fileCount = document.createElement('div');
+            fileCount.className = 'file-count';
+            fileCount.textContent = `${selectedFiles.length} file(s) selected`;
+            fileList.insertBefore(fileCount, fileList.firstChild);
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displaySelectedFiles();
+            updateAnalyzeButton();
+        }
+
+        function updateAnalyzeButton() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = selectedFiles.length === 0;
+        }
+
+        function analyzeFiles() {
+            if (selectedFiles.length === 0) {
+                alert('Please select at least one file to analyze.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = true;
+
+            // Create FormData
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files[]', file);
+            });
+
+            // Send request
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'Analysis failed');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                showError('Network error: ' + error.message);
+            })
+            .finally(() => {
+                document.getElementById('analyzeBtn').disabled = false;
+            });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('resultsSummary');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            // Update download link with proper event handling
+            downloadBtn.onclick = function(e) {
+                e.preventDefault();
+                downloadReport();
+            };
+
+            // Create summary
+            let summaryHTML = `
+                <div class="success">
+                    <strong>✓ Analysis completed successfully!</strong><br>
+                    ${data.message}
+                </div>
+            `;
+
+            if (data.results && data.results.length > 0) {
+                summaryHTML += '<h3>Analysis Summary:</h3>';
+                
+                data.results.forEach((result, index) => {
+                    if (result.error) {
+                        summaryHTML += `
+                            <div class="error">
+                                <strong>File ${index + 1}: ${result.file_name}</strong><br>
+                                Error: ${result.error}
+                            </div>
+                        `;
+                    } else {
+                        summaryHTML += `
+                            <div class="success">
+                                <strong>File ${index + 1}: ${result.file_name}</strong><br>
+                                Records: ${result.total_records}<br>
+                                Analysis Date: ${result.analysis_date}
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            summaryDiv.innerHTML = summaryHTML;
+            resultsDiv.style.display = 'block';
+        }
+
+        function downloadReport() {
+            // Use the simpler download route without filename
+            const link = document.createElement('a');
+            link.href = '/download';
+            link.download = 'wai_analysis_report.txt';
+            link.style.display = 'none';
+            
+            // Add to DOM, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('resultsSummary');
+            
+            summaryDiv.innerHTML = `
+                <div class="error">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

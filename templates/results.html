@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAI Analysis Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e8e8e8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: #ecf0f1;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #ecf0f1;
+        }
+
+        .content {
+            padding: 40px;
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.2);
+            color: #2ecc71;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-left: 4px solid #2ecc71;
+            backdrop-filter: blur(5px);
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-left: 4px solid #e74c3c;
+            backdrop-filter: blur(5px);
+        }
+
+        .results-summary {
+            background: rgba(44, 62, 80, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .results-summary h3 {
+            color: #ecf0f1;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .file-info {
+            background: rgba(52, 73, 94, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-left: 4px solid #3498db;
+        }
+
+        .file-info strong {
+            color: #3498db;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: rgba(52, 73, 94, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            border-color: #3498db;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .download-section h3 {
+            color: #ecf0f1;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .download-section p {
+            color: #bdc3c7;
+            margin-bottom: 25px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .download-btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(44, 62, 80, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Work Ability Index Analysis Results</h1>
+            <p>Your comprehensive analysis report is ready</p>
+        </div>
+
+        <div class="content">
+            {% if results_list %}
+                <div class="success-message">
+                    <strong>✅ Analysis Completed Successfully!</strong><br>
+                    Your Excel file has been analyzed and the comprehensive report has been generated.
+                </div>
+                
+                <div class="results-summary">
+                    <h3>Analysis Summary</h3>
+                    {% for result in results_list %}
+                        <div class="file-info">
+                            <strong>File:</strong> {{ result.file_name }}<br>
+                            <strong>Analysis Date:</strong> {{ result.analysis_date }}
+                        </div>
+                        
+                        {% if result.error %}
+                            <div class="error-message">
+                                <strong>Error:</strong> {{ result.error }}
+                            </div>
+                        {% else %}
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ result.total_records }}</div>
+                                    <div class="stat-label">Total Records</div>
+                                </div>
+                                
+                                {% if result.wai_stats %}
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ result.wai_stats.n_wai }}</div>
+                                    <div class="stat-label">WAI Scores</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ "%.2f"|format(result.wai_stats.wai_mean) }}</div>
+                                    <div class="stat-label">Mean WAI</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if result.requirement_3 and result.requirement_3 != "No participants with WAI < 27" %}
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ result.requirement_3.low_wai_count }}</div>
+                                    <div class="stat-label">WAI < 27</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                {% if report_filename %}
+                <div class="download-section">
+                    <h3>📄 Download Your Report</h3>
+                    <p>Your comprehensive analysis report is ready for download.</p>
+                    <a href="{{ url_for('download_report', filename=report_filename) }}" class="download-btn">
+                        📥 Download Report ({{ report_filename }})
+                    </a>
+                    <br>
+                    <a href="{{ url_for('download_latest_report') }}" class="download-btn">
+                        📥 Download Latest Report
+                    </a>
+                </div>
+                {% endif %}
+                
+            {% else %}
+                <div class="error-message">
+                    <strong>❌ Analysis Failed</strong><br>
+                    No results were generated. Please check your uploaded file and try again.
+                </div>
+            {% endif %}
+            
+            <div class="button-container">
+                <a href="{{ url_for('index') }}" class="back-btn">← Back to Upload</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
